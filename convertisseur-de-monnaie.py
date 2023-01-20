@@ -6,6 +6,7 @@ currencies = ["Euro", "Dollar US", "Pound", "Franc FRF", "Peso", "Yen"]
 # ref euro
 # 20 janv., 09:22 UTC
 currencies_value = [1.0, 1.08355, 0.877777645, 6.5595679391, 20.5785434, 140.2063117]   # 1E8
+currencies_symbol = ["€", "$", "£", "FRF", "$ MXN", "¥"]
 
 
 def convert():
@@ -20,6 +21,7 @@ def convert():
 
             result = (to_convert / value_from) * value_to
             converted_field.insert(0, result)
+            add_to_history(str(to_convert) + " " + currencies_symbol[currencies.index(currency_from.get())] + " → " + str(result) + " " + str(currencies_symbol[currencies.index(currency_to.get())]))
 
         except:
             converted_field.delete(0, END)
@@ -31,6 +33,10 @@ def intervert_from_to():
     to_old = currency_to.get()
     currency_from.set(to_old)
     currency_to.set(from_old)
+
+
+def add_to_history(text):
+    history_list.insert(END, text)
 
 
 window = Tk(className="Convertisseur de Monnaie")
@@ -77,7 +83,18 @@ amount_converted_label.grid(row=2, column=1)
 converted_field = Entry(result_frame, relief="sunken", borderwidth=6, font=('Arial', 14))
 converted_field.grid(row=2, column=2)
 
+# History
+history_frame = Frame(window, pady=8)
+history_list = Listbox(history_frame, width=50, height=6)
+history_list.grid(column=0, row=0, sticky=(N, W, E, S))
+scrollbar = Scrollbar(history_frame, orient=VERTICAL, command=history_list.yview)
+scrollbar.grid(column=1, row=0, sticky=(N, S))
+history_list['yscrollcommand'] = scrollbar.set
+history_frame.grid_columnconfigure(0, weight=1)
+history_frame.grid_rowconfigure(0, weight=1)
+
 convert_frame.pack()
 result_frame.pack()
+history_frame.pack()
 
 window.mainloop()
